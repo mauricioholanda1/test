@@ -3,23 +3,25 @@
  * @returns an array of arrays containing items.
  */
 function assignLanes(items) {
-  const sortedItems = items.sort((a, b) =>
-      new Date(a.start) - new Date(b.start)
-  );
-  const lanes = [];
+    const lanes = [];
+    const sorted = [...items].sort((a,b) => new Date(a.start) - new Date(b.start));
 
-  function assignItemToLane(item) {
-      for (const lane of lanes) {
-          if (new Date(lane[lane.length - 1].end) < new Date(item.start)) {
-              lane.push(item);
-              return;
-          }
-      }
-      lanes.push([item]);
-  }
+    for (const item of sorted) {
+        let placed = false;
+        for (const lane of lanes) {
+            const last = lane[lane.length - 1];
+            if (new Date(last.end) <= new Date(item.start)) {
+                lane.push(item);
+                placed = true;
+                break;
+            }
+        }
+        if (!placed) lanes.push([item]);
+    }
 
-  for (const item of sortedItems) {
-      assignItemToLane(item);
-  }
-  return lanes;
+    return lanes.flatMap((laneItems,laneIndex) =>
+        laneItems.map((item) => ({ ...item,lane: laneIndex }))
+    );
 }
+
+export { assignLanes };
