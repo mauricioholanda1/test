@@ -56,57 +56,102 @@ const Timeline = () => {
     setModalData(null);
   };
 
+  // Styles
+  const containerStyle = {
+    padding: "16px",
+  };
+
+  const zoomButtonContainerStyle = {
+    marginBottom: "16px",
+    display: "flex",
+    gap: "8px",
+  };
+
+  const zoomButtonStyle = {
+    padding: "10px 20px",
+    cursor: "pointer",
+    backgroundColor: "#0056b3",
+    color: "#fff",
+    border: "none",
+    borderRadius: "4px",
+    fontSize: "14px",
+    fontWeight: "bold",
+    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.2)",
+    transition: "background-color 0.3s ease",
+  };
+
+  const timelineContainerStyle = {
+    position: "relative",
+    border: "1px solid #ccc",
+    height: "400px",
+    overflowX: "auto",
+    padding: "16px",
+    boxSizing: "border-box",
+  };
+
+  const verticalLineStyle = (left) => ({
+    position: "absolute",
+    left,
+    top: 20,
+    height: "calc(100% - 20px)",
+    width: "1px",
+    backgroundColor: "#ddd",
+  });
+
+  const dateLabelStyle = (left,zoom) => ({
+    position: "absolute",
+    left: left - zoom / 2,
+    top: 0,
+    transform: "translateX(-50%)",
+    fontSize: "10px",
+    color: "#666",
+  });
+
+  const timelineItemStyle = (item,itemColors,left,width) => ({
+    position: "absolute",
+    backgroundColor: itemColors[item.id],
+    color: "#fff",
+    fontSize: "12px",
+    borderRadius: "4px",
+    padding: "4px 8px",
+    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.2)",
+    top: item.lane * 50 + 20,
+    left,
+    width,
+    cursor: "pointer",
+  });
+
+  const timelineItemTextStyle = {
+    fontSize: "10px",
+    marginTop: "4px",
+    display: "flex",
+    justifyContent: "space-between",
+  };
+
   return (
-    <div style={{ padding: "16px" }}>
+    <div style={containerStyle}>
       {/* Zoom Buttons */}
-      <div style={{ marginBottom: "16px",display: "flex",gap: "8px" }}>
+      <div style={zoomButtonContainerStyle}>
         <button
           onClick={() => setZoom(zoom * 1.2)}
-          style={{
-            padding: "10px 20px",
-            cursor: "pointer",
-            backgroundColor: "#0056b3",
-            color: "#fff",
-            border: "none",
-            borderRadius: "4px",
-            fontSize: "14px",
-            fontWeight: "bold",
-            boxShadow: "0 2px 4px rgba(0, 0, 0, 0.2)",
-            transition: "background-color 0.3s ease",
-          }}
+          style={zoomButtonStyle}
+          onMouseEnter={(e) => (e.target.style.backgroundColor = "#004494")}
+          onMouseLeave={(e) => (e.target.style.backgroundColor = "#0056b3")}
         >
           Zoom +
         </button>
         <button
           onClick={() => setZoom((prevZoom) => Math.max(prevZoom / 1.2,40))}
-          style={{
-            padding: "10px 20px",
-            cursor: "pointer",
-            backgroundColor: "#0056b3",
-            color: "#fff",
-            border: "none",
-            borderRadius: "4px",
-            fontSize: "14px",
-            fontWeight: "bold",
-            boxShadow: "0 2px 4px rgba(0, 0, 0, 0.2)",
-            transition: "background-color 0.3s ease",
-          }}
+          style={zoomButtonStyle}
+          onMouseEnter={(e) => (e.target.style.backgroundColor = "#004494")}
+          onMouseLeave={(e) => (e.target.style.backgroundColor = "#0056b3")}
         >
           Zoom -
         </button>
       </div>
 
       {/* Timeline */}
-      <div
-        style={{
-          position: "relative",
-          border: "1px solid #ccc",
-          height: "400px",
-          overflowX: "auto",
-          padding: "16px",
-          boxSizing: "border-box",
-        }}
-      >
+      <div style={timelineContainerStyle}>
         {/* Vertical lines */}
         <div
           style={{
@@ -132,28 +177,8 @@ const Timeline = () => {
 
             return (
               <div key={dayIndex}>
-                <div
-                  style={{
-                    position: "absolute",
-                    left: left - zoom / 2,
-                    top: 0,
-                    transform: "translateX(-50%)",
-                    fontSize: "10px",
-                    color: "#666",
-                  }}
-                >
-                  {formattedDate}
-                </div>
-                <div
-                  style={{
-                    position: "absolute",
-                    left,
-                    top: 20,
-                    height: "calc(100% - 20px)",
-                    width: "1px",
-                    backgroundColor: "#ddd",
-                  }}
-                />
+                <div style={dateLabelStyle(left,zoom)}>{formattedDate}</div>
+                <div style={verticalLineStyle(left)} />
               </div>
             );
           })}
@@ -173,30 +198,11 @@ const Timeline = () => {
           return (
             <div
               key={index}
-              style={{
-                position: "absolute",
-                backgroundColor: itemColors[item.id],
-                color: "#fff",
-                fontSize: "12px",
-                borderRadius: "4px",
-                padding: "4px 8px",
-                boxShadow: "0 2px 4px rgba(0, 0, 0, 0.2)",
-                top: item.lane * 50 + 20,
-                left,
-                width,
-                cursor: "pointer",
-              }}
+              style={timelineItemStyle(item,itemColors,left,width)}
               onClick={() => setModalData(item)}
             >
               <div>{item.name}</div>
-              <div
-                style={{
-                  fontSize: "10px",
-                  marginTop: "4px",
-                  display: "flex",
-                  justifyContent: "space-between",
-                }}
-              >
+              <div style={timelineItemTextStyle}>
                 <span>{item.start}</span>
                 <span>{item.end}</span>
               </div>
